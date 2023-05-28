@@ -1,3 +1,18 @@
 server:
   port: 8085
 
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    druid:
+      url: jdbc:mysql://47.98.250.49:3306/study?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+      username: root
+      password: Zxd161512?
+
+  redis:
+    host: 47.98.250.49
+    port: 6379
+    password: Zxd161512?
+
+
