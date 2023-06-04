@@ -2,7 +2,9 @@ package com.zhangxd.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zhangxd.domain.User;
+import com.zhangxd.domain.UserParam;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.session.ResultHandler;
 
 import java.util.List;
 
@@ -17,4 +19,8 @@ public interface UserMapper {
 
 
     List<User> selectList();
+
+    void exportSelective(UserParam param, ResultHandler<User> handler);
+
+//    long count(UserParam queryParam);
 }

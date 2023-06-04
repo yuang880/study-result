@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangxd.mapper.DataExportRecordMapper">
+  <resultMap id="BaseResultMap" type="com.zhangxd.domain.export.DataExportRecordDTO">
+    <id column="URID" jdbcType="VARCHAR" property="urid" />
+    <result column="CREATOR" jdbcType="VARCHAR" property="creator" />
+    <result column="CREATE_DATE" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="UPDATE_DATE" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="STATUS" jdbcType="VARCHAR" property="status" />
+    <result column="STORAGE_PATH" jdbcType="VARCHAR" property="storagePath" />
+    <result column="EXCEPTION_MESSAGE" jdbcType="VARCHAR" property="exceptionMessage" />
+    <result column="PROGRESS" jdbcType="DECIMAL" property="progress" />
+    <result column="DATA_SOURCE" jdbcType="VARCHAR" property="dataSource" />
+    <result column="EXPORT_NUM" jdbcType="DECIMAL" property="exportNum" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.zhangxd.domain.export.DataExportRecordDTO">
+    <result column="EXPORT_PARAM" jdbcType="CLOB" property="exportParam" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    URID, CREATOR, CREATE_DATE, UPDATE_DATE, STATUS, STORAGE_PATH, EXCEPTION_MESSAGE,
+    PROGRESS, DATA_SOURCE, EXPORT_NUM
+  </sql>
+  <sql id="Blob_Column_List">
+    EXPORT_PARAM
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from TBIZOPS_DATA_EXPORT_RECORD
+    where URID = #{urid,jdbcType=VARCHAR}
+  </select>
+  <insert id="insert" parameterType="com.zhangxd.domain.export.DataExportRecordDTO">
+    insert into TBIZOPS_DATA_EXPORT_RECORD (URID, CREATOR, CREATE_DATE,
+      UPDATE_DATE, STATUS, STORAGE_PATH,
+      EXCEPTION_MESSAGE, PROGRESS, DATA_SOURCE,
+      EXPORT_NUM, EXPORT_PARAM)
+    values (#{urid,jdbcType=VARCHAR}, #{creator,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP},
+      #{updateDate,jdbcType=TIMESTAMP}, #{status,jdbcType=VARCHAR}, #{storagePath,jdbcType=VARCHAR},
+      #{exceptionMessage,jdbcType=VARCHAR}, #{progress,jdbcType=DECIMAL}, #{dataSource,jdbcType=VARCHAR},
+      #{exportNum,jdbcType=DECIMAL}, #{exportParam,jdbcType=CLOB})
+  </insert>
+  <sql id="queryWhere">
+    <where>
+      <if test="createDateBeginDate != null">
+        CREATE_DATE &gt;= #{createDateBeginDate}
+      </if>
+      <if test="createDateEndDate != null">
+        AND  CREATE_DATE &lt; #{createDateEndDate}
+      </if>
+      <if test="selectAllIncludeParam!=null and selectAllIncludeParam.includeUridList != null and selectAllIncludeParam.includeUridList.size() > 0">
+        <foreach collection="selectAllIncludeParam.includeUridList" item="uridList" separator="or" open="and (" close=")">
+          URID in
+          <foreach collection="uridList" item="urid" separator="," close=")" open="(">
+            #{urid}
+          </foreach>
+        </foreach>
+      </if>
+      <if test="selectAllIncludeParam!=null and selectAllIncludeParam.excludeUridList != null and selectAllIncludeParam.excludeUridList.size() > 0">
+        <foreach collection="selectAllIncludeParam.excludeUridList" item="uridList" separator="and" open="and (" close=")">
+          URID NOT in
+          <foreach collection="uridList" item="urid" separator="," close=")" open="(">
+            #{urid}
+          </foreach>
+        </foreach>
+      </if>
+      <if test="statusList != null and statusList.size()>0">
+        AND STATUS IN
+        <foreach collection="statusList" open="(" separator="," close=")" item="status">
+          #{status}
+        </foreach>
+      </if>
+      <if test="dataSourceList != null and dataSourceList.size()>0">
+        AND DATA_SOURCE IN
+        <foreach collection="dataSourceList" open="(" separator="," close=")" item="dataSource">
+          #{dataSource}
+        </foreach>
+      </if>
+      <if test="userIdList != null and userIdList.size()>0">
+        AND CREATOR IN
+        <foreach collection="userIdList" open="(" separator="," close=")" item="userId">
+          #{userId}
+        </foreach>
+      </if>
+    </where>
+  </sql>
+  <select id="queryBySelective" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from TBIZOPS_DATA_EXPORT_RECORD
+    <include refid="queryWhere"/>
+  </select>
+  <select id="exportBySelective" resultMap="ResultMapWithBLOBs">
+    select
+    ${dataBaseFields}
+    from TBIZOPS_DATA_EXPORT_RECORD
+    <include refid="queryWhere"/>
+    order by CREATE_DATE, URID
+  </select>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.zhangxd.domain.export.DataExportRecordDTO">
+    update TBIZOPS_DATA_EXPORT_RECORD
+    <set>
+      <if test="creator != null">
+        CREATOR = #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null">
+        UPDATE_DATE = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        STATUS = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="storagePath != null">
+        STORAGE_PATH = #{storagePath,jdbcType=VARCHAR},
+      </if>
+      <if test="exceptionMessage != null">
+        EXCEPTION_MESSAGE = #{exceptionMessage,jdbcType=VARCHAR},
+      </if>
+      <if test="progress != null">
+        PROGRESS = #{progress,jdbcType=DECIMAL},
+      </if>
+      <if test="dataSource != null">
+        DATA_SOURCE = #{dataSource,jdbcType=VARCHAR},
+      </if>
+      <if test="exportNum != null">
+        EXPORT_NUM = #{exportNum,jdbcType=DECIMAL},
+      </if>
+      <if test="exportParam != null">
+        EXPORT_PARAM = #{exportParam,jdbcType=CLOB},
+      </if>
+    </set>
+    where URID = #{urid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateWithPreState" parameterType="com.zhangxd.domain.export.DataExportRecordDTO">
+    update TBIZOPS_DATA_EXPORT_RECORD
+    <set>
+      <if test="record.creator != null and record.creator != ''">
+        CREATOR = #{record.creator,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createDate != null">
+        CREATE_DATE = #{record.createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateDate != null">
+        UPDATE_DATE = #{record.updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.status != null and record.status != ''">
+        STATUS = #{record.status,jdbcType=VARCHAR},
+      </if>
+      <if test="record.storagePath != null and record.storagePath != ''">
+        STORAGE_PATH = #{record.storagePath,jdbcType=VARCHAR},
+      </if>
+      <if test="record.exceptionMessage != null and record.exceptionMessage != ''">
+        EXCEPTION_MESSAGE = #{record.exceptionMessage,jdbcType=VARCHAR},
+      </if>
+      <if test="record.progress != null">
+        PROGRESS = #{record.progress,jdbcType=DECIMAL},
+      </if>
+      <if test="record.dataSource != null and record.dataSource != ''">
+        DATA_SOURCE = #{record.dataSource,jdbcType=VARCHAR},
+      </if>
+      <if test="record.exportNum != null">
+        EXPORT_NUM = #{record.exportNum,jdbcType=DECIMAL},
+      </if>
+      <if test="record.exportParam != null">
+        EXPORT_PARAM = #{record.exportParam,jdbcType=CLOB},
+      </if>
+    </set>
+    where URID = #{record.urid,jdbcType=VARCHAR}
+    AND STATUS = #{status,jdbcType=VARCHAR}
+  </update>
+
+  <select id="countInvalidRecord" resultType="java.lang.Integer">
+    SELECT COUNT(0) FROM TBIZOPS_DATA_EXPORT_RECORD
+    <where>
+      <if test="statusList != null and statusList.size()>0">
+        AND STATUS IN
+        <foreach collection="statusList" open="(" separator="," close=")" item="status">
+          #{status}
+        </foreach>
+      </if>
+       AND CREATE_DATE &lt;= #{expireDate}
+    </where>
+  </select>
+  <select id="listInvalidRecord" resultMap="BaseResultMap">
+    SELECT URID,STORAGE_PATH,STATUS FROM TBIZOPS_DATA_EXPORT_RECORD
+    <where>
+      <if test="statusList != null and statusList.size()>0">
+        AND STATUS IN
+        <foreach collection="statusList" open="(" separator="," close=")" item="status">
+          #{status}
+        </foreach>
+      </if>
+       AND CREATE_DATE &lt;= #{expireDate}
+    </where>
+    ORDER BY URID
+  </select>
+  <select id="countBySelective" resultType="java.lang.Long">
+    select
+      COUNT(0)
+    from TBIZOPS_DATA_EXPORT_RECORD
+    <include refid="queryWhere"/>
+  </select>
+</mapper>
